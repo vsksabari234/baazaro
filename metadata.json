@@ -1,0 +1,6 @@
+{
+  "name": "Bazaaro — Multi-Vendor Marketplace",
+  "description": "Full-stack multi-vendor marketplace connecting independent sellers with buyers, featuring real authentication, buyer profile, cart persistence, orders, and seller dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Bazaaro — Multi-Vendor Marketplace</title>
+  <meta name="description" content="A real full-stack multi-vendor marketplace connecting thoughtful buyers with independent makers and sellers.">
+  <meta property="og:title" content="Bazaaro — Multi-Vendor Marketplace">
+  <meta property="og:description" content="Discover unique handmade, vintage, and artisanal goods from independent creators.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/bazaaro.css">
+</head>
+<body data-screen="store">
+
+  <!-- Boot Loader -->
+  <div id="boot">
+    <div class="boot-mark"><span class="thread">🧵</span> Bazaaro</div>
+    <p>Connecting independent makers &amp; thoughtful buyers…</p>
+  </div>
+
+  <!-- Announcement Bar -->
+  <div class="announce">
+    <span>✨ Free shipping across all shops on orders over ₹999 &nbsp;·&nbsp; 🎁 Use code CRAFT10 for 10% off &nbsp;·&nbsp; 🧵 Direct from independent Indian makers &nbsp;·&nbsp; 📦 7-day hassle-free returns</span>
+  </div>
+
+  <!-- Global Header -->
+  <header id="header">
+    <div class="container nav-row">
+      <button class="logo" onclick="showScreen('store')">🧵 Bazaaro</button>
+      <nav class="nav-links" id="navLinks">
+        <button onclick="clearFilterAndScroll()">All products</button>
+        <button onclick="setCategoryFilter('Fashion')">Fashion</button>
+        <button onclick="setCategoryFilter('Electronics')">Electronics</button>
+        <button onclick="setCategoryFilter('Home &amp; Kitchen')">Home &amp; Kitchen</button>
+        <button onclick="setCategoryFilter('Beauty')">Beauty</button>
+        <button id="navSellBtn" onclick="goSell()">Sell on Bazaaro</button>
+      </nav>
+      <div class="nav-actions">
+        <button class="mobile-menu-btn" onclick="document.getElementById('navLinks').classList.toggle('show')">☰</button>
+        <button class="icon-btn" id="userBtn" onclick="handleUserBtnClick()" title="Buyer Account">👤</button>
+        <button class="icon-btn" onclick="state.buyer ? (showBuyerProfileTab('wishlist'), showScreen('buyer-profile')) : showScreen('buyer-auth')" title="Wishlist">♡</button>
+        <button class="icon-btn" id="cartIcon" onclick="openDrawer()" title="Cart">🛍️<span class="cart-count" id="cartCount">0</span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================
+       SCREEN: STOREFRONT
+       ======================================================== -->
+  <main id="screen-store" class="screen active">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">Direct from independent makers</div>
+          <h1>Made by real people. <em>Found only here.</em></h1>
+          <p>Discover unique ceramics, hand-dyed apparel, artisan electronics, and everyday pieces crafted with care by verified independent sellers across India.</p>
+          <div class="hero-ctas">
+            <button class="btn btn-primary" onclick="scrollToRail()">Explore the marketplace</button>
+            <button class="btn btn-ghost" onclick="goSell()">Open your shop</button>
+          </div>
+          <div class="hero-trust">
+            <div><strong id="trustSellers">7+</strong>independent shops</div>
+            <div><strong id="trustProducts">12+</strong>curated pieces</div>
+            <div><strong>100%</strong>direct seller payouts</div>
+          </div>
+        </div>
+        <div class="collage" id="heroCollage"></div>
+      </div>
+    </section>
+
+    <!-- Stitched Line Divider -->
+    <div class="stitch reveal">
+      <svg viewBox="0 0 1200 24" preserveAspectRatio="none"><path d="M0,12 C300,12 300,12 600,12 C900,12 900,12 1200,12"/></svg>
+    </div>
+
+    <!-- Category Strip -->
+    <section class="cat-strip">
+      <div class="container" style="margin-bottom:14px;">
+        <div class="cat-strip-header">
+          <div class="cat-strip-label"><span>✨</span> Shop by Craft Collection</div>
+          <div class="cat-strip-hint">
+            <span>Hover to pause</span>
+            <span class="kbd">Click to filter</span>
+          </div>
+        </div>
+      </div>
+      <div class="cat-marquee-outer">
+        <div class="cat-track" id="catTrack"></div>
+      </div>
+    </section>
+
+    <!-- Featured Bento Grid -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>Editor’s curation</h2>
+            <p>Standout pieces handpicked from this week’s newest shop drops.</p>
+          </div>
+        </div>
+        <div class="bento" id="bentoGrid"></div>
+      </div>
+    </section>
+
+    <!-- Product Catalog Rail -->
+    <section class="section" id="railSection">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 id="railHeading">Fresh off the shelf</h2>
+            <p id="railSub">Everything currently for sale on Bazaaro</p>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <div class="search-wrap">
+              <span>🔍</span>
+              <input type="text" id="searchInput" placeholder="Search craft, shop, material…" oninput="onSearchInput(this.value)">
+            </div>
+            <div class="rail-nav">
+              <button class="rail-btn" onclick="scrollRail(-1)">←</button>
+              <button class="rail-btn" onclick="scrollRail(1)">→</button>
+            </div>
+          </div>
+        </div>
+        <div class="rail" id="productRail"></div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section">
+      <div class="container">
+        <div class="testi-wrap">
+          <div id="testiSlides"></div>
+          <div class="testi-dots" id="testiDots"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="section" style="padding-top:0;">
+      <div class="container">
+        <div class="newsletter">
+          <div>
+            <h3>Get the weekend drop list</h3>
+            <p style="color:var(--ink-soft); font-size:.9rem; margin-top:4px;">New independent makers, limited small-batches, no spam ever.</p>
+          </div>
+          <form onsubmit="event.preventDefault(); toastMsg('You\'re on the list! Welcome 🎉'); this.reset();">
+            <input type="email" required placeholder="you@example.com">
+            <button type="submit" class="btn btn-primary btn-sm">Subscribe</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="foot-grid">
+          <div>
+            <div class="logo" style="color:#fff; margin-bottom:12px;">🧵 Bazaaro</div>
+            <p style="font-size:.82rem; line-height:1.6; opacity:.75;">A real multi-vendor marketplace connecting thoughtful buyers with independent makers, craftspeople, and small brands across India.</p>
+          </div>
+          <div>
+            <h5>Shop Categories</h5>
+            <ul>
+              <li><button onclick="setCategoryFilter('Fashion')">Fashion &amp; Apparel</button></li>
+              <li><button onclick="setCategoryFilter('Electronics')">Artisan Tech</button></li>
+              <li><button onclick="setCategoryFilter('Home &amp; Kitchen')">Home &amp; Living</button></li>
+              <li><button onclick="setCategoryFilter('Beauty')">Natural Beauty</button></li>
+            </ul>
+          </div>
+          <div>
+            <h5>Buyer Account</h5>
+            <ul>
+              <li><button onclick="state.buyer ? showScreen('buyer-profile') : showScreen('buyer-auth')">Buyer Profile &amp; Login</button></li>
+              <li><button onclick="state.buyer ? (showBuyerProfileTab('orders'), showScreen('buyer-profile')) : showScreen('buyer-auth')">Order History</button></li>
+              <li><button onclick="state.buyer ? (showBuyerProfileTab('addresses'), showScreen('buyer-profile')) : showScreen('buyer-auth')">Saved Addresses</button></li>
+              <li><button onclick="state.buyer ? (showBuyerProfileTab('wishlist'), showScreen('buyer-profile')) : showScreen('buyer-auth')">Saved Wishlist</button></li>
+            </ul>
+          </div>
+          <div>
+            <h5>Marketplace Portals</h5>
+            <ul>
+              <li><button onclick="goSell()">Seller Dashboard</button></li>
+              <li><button onclick="showScreen('seller-auth')">Seller Sign In / Join</button></li>
+              <li><button onclick="showScreen('admin-auth')">Platform Admin Portal</button></li>
+              <li><button onclick="toastMsg('COD available nationwide · UPI/Card online gateway ready')">Secure Payments</button></li>
+            </ul>
+          </div>
+        </div>
+        <div class="foot-bottom">
+          &copy; 2026 Bazaaro Technologies Private Limited. All rights reserved. Full-stack marketplace backed by Node.js, Express &amp; MySQL.
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ========================================================
+       SCREEN: CHECKOUT
+       ======================================================== -->
+  <div id="screen-checkout" class="screen">
+    <div class="container checkout-wrap">
+      <button class="link-btn" onclick="showScreen('store')" style="margin-bottom:20px;">← Back to Bazaaro</button>
+
+      <div class="checkout-grid" id="checkoutFormWrap">
+        <div class="checkout-panel">
+          <h3>Delivery &amp; payment details</h3>
+          <div class="form-msg err" id="checkoutMsg"></div>
+
+          <form id="checkoutForm" onsubmit="submitCheckout(event)">
+            <div class="field">
+              <label for="cfName">Full name</label>
+              <input type="text" id="cfName" required placeholder="Aarav Sharma">
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="cfPhone">Phone number</label>
+                <input type="tel" id="cfPhone" required placeholder="9876543210">
+              </div>
+              <div class="field">
+                <label for="cfPincode">Delivery pincode</label>
+                <input type="text" id="cfPincode" required placeholder="560001">
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="cfAddress">Complete delivery address</label>
+              <textarea id="cfAddress" rows="3" required placeholder="Flat/House number, Street, Landmark, City"></textarea>
+            </div>
+
+            <div class="field" style="margin-top:24px;">
+              <label>Payment method</label>
+              <div class="pay-options">
+                <button type="button" class="pay-opt active" id="payOptCod" onclick="selectPayMethod('cod')">
+                  <div class="t">💵 Cash on delivery</div>
+                  <div class="d">Pay cash or UPI when your parcel arrives</div>
+                </button>
+                <button type="button" class="pay-opt" id="payOptOnline" onclick="selectPayMethod('online')">
+                  <div class="t">⚡ Pay online now</div>
+                  <div class="d">UPI, Google Pay, PhonePe, Cards</div>
+                </button>
+              </div>
+
+              <!-- Online payment subfields -->
+              <div id="paySubOnline" class="pay-sub">
+                <div class="pay-method-tabs">
+                  <button type="button" class="pay-method-tab active" id="upiTab" onclick="selectOnlineTab('upi')">UPI / QR</button>
+                  <button type="button" class="pay-method-tab" id="cardTab" onclick="selectOnlineTab('card')">Credit / Debit Card</button>
+                </div>
+                <div id="upiFields">
+                  <div class="field">
+                    <label for="cfUpi">Your UPI ID (VPA)</label>
+                    <input type="text" id="cfUpi" placeholder="username@okhdfcbank">
+                  </div>
+                </div>
+                <div id="cardFields" class="hide">
+                  <div class="field">
+                    <label for="cfCardNum">Card number</label>
+                    <input type="text" id="cfCardNum" placeholder="4111 2222 3333 4444" maxlength="19">
+                  </div>
+                  <div class="field-row">
+                    <div class="field">
+                      <label for="cfCardExp">Expiry</label>
+                      <input type="text" id="cfCardExp" placeholder="MM/YY" maxlength="5">
+                    </div>
+                    <div class="field">
+                      <label for="cfCardCvv">CVV</label>
+                      <input type="password" id="cfCardCvv" placeholder="123" maxlength="4">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="checkoutSubmitBtn" style="margin-top:14px;">Place order</button>
+          </form>
+
+          <div id="payProcessing" class="pay-processing hide">
+            <div class="spinner"></div>
+            <p style="font-weight:600;" id="payProcessingText">Connecting to payment gateway…</p>
+            <p style="color:var(--ink-soft); font-size:.8rem; margin-top:6px;">Please do not refresh or close this tab.</p>
+          </div>
+        </div>
+
+        <div class="checkout-panel">
+          <h3>Order summary</h3>
+          <div id="checkoutSummaryItems"></div>
+          <div class="summary-total">
+            <span>Total payable</span>
+            <span id="checkoutTotal">₹0</span>
+          </div>
+          <p style="font-size:.76rem; color:var(--ink-soft); margin-top:14px; line-height:1.5;">Orders are fulfilled and dispatched directly by independent sellers. You will receive an SMS and email notification upon shipment.</p>
+        </div>
+      </div>
+
+      <div class="checkout-panel success-wrap hide" id="checkoutSuccessWrap">
+        <div class="big-emoji">🎉</div>
+        <h2>Order confirmed!</h2>
+        <p id="successMsg">Thank you for shopping small! Your order has been placed and each maker is getting ready to pack it with care.</p>
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="showScreen('store')">Continue shopping</button>
+          <button class="btn btn-ghost" onclick="state.buyer ? (showBuyerProfileTab('orders'), showScreen('buyer-profile')) : showScreen('store')">View order status</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       SCREEN: BUYER AUTH (REGISTER / LOGIN)
+       ======================================================== -->
+  <div id="screen-buyer-auth" class="screen">
+    <div class="auth-wrap">
+      <div class="auth-card">
+        <button class="auth-back" onclick="showScreen('store')">← Back to Bazaaro</button>
+        <div class="auth-brand">🧵 Bazaaro</div>
+        <h2 id="buyerAuthTitle">Welcome back, Buyer</h2>
+        <p class="sub" id="buyerAuthSub">Log in to view your orders, addresses, and wishlist.</p>
+
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tabBuyerLogin" onclick="switchBuyerAuthTab('login')">Log in</button>
+          <button class="auth-tab" id="tabBuyerSignup" onclick="switchBuyerAuthTab('signup')">Create account</button>
+        </div>
+
+        <div class="demo-box">
+          <strong>Demo buyer login</strong>
+          Email: <code>buyer@bazaaro.test</code> · Pass: <code>buyer1234</code>
+          <div style="margin-top:10px;">
+            <button class="btn btn-ghost btn-sm" onclick="fillBuyerDemoCreds()">Auto-fill buyer demo</button>
+          </div>
+        </div>
+
+        <div class="form-msg err" id="buyerAuthMsg"></div>
+
+        <form id="buyerLoginForm" class="auth-form active" onsubmit="submitBuyerLogin(event)">
+          <div class="field">
+            <label for="buyerLoginEmail">Email address</label>
+            <input type="email" id="buyerLoginEmail" required placeholder="you@example.com">
+          </div>
+          <div class="field">
+            <label for="buyerLoginPassword">Password</label>
+            <input type="password" id="buyerLoginPassword" required placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" id="buyerLoginBtn">Log in</button>
+        </form>
+
+        <form id="buyerSignupForm" class="auth-form" onsubmit="submitBuyerSignup(event)">
+          <div class="field">
+            <label for="buyerSignupName">Full name</label>
+            <input type="text" id="buyerSignupName" required placeholder="Priya Patel">
+          </div>
+          <div class="field">
+            <label for="buyerSignupEmail">Email address</label>
+            <input type="email" id="buyerSignupEmail" required placeholder="you@example.com">
+          </div>
+          <div class="field">
+            <label for="buyerSignupPhone">Phone number</label>
+            <input type="tel" id="buyerSignupPhone" required placeholder="9876543210">
+          </div>
+          <div class="field">
+            <label for="buyerSignupPassword">Choose password (min 6 chars)</label>
+            <input type="password" id="buyerSignupPassword" required minlength="6" placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" id="buyerSignupBtn">Create account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       SCREEN: BUYER PROFILE MANAGEMENT
+       ======================================================== -->
+  <div id="screen-buyer-profile" class="screen">
+    <div class="shell">
+      <div class="sidebar">
+        <div class="brand">
+          🧵 Bazaaro <span class="badge-tag">BUYER</span>
+        </div>
+        <nav>
+          <button class="nav-link active" id="bp-tab-profile" onclick="showBuyerProfileTab('profile')">
+            <span class="ic">👤</span> Profile Details
+          </button>
+          <button class="nav-link" id="bp-tab-addresses" onclick="showBuyerProfileTab('addresses')">
+            <span class="ic">🏡</span> Saved Addresses
+          </button>
+          <button class="nav-link" id="bp-tab-orders" onclick="showBuyerProfileTab('orders')">
+            <span class="ic">📦</span> Order History
+          </button>
+          <button class="nav-link" id="bp-tab-wishlist" onclick="showBuyerProfileTab('wishlist')">
+            <span class="ic">♡</span> Saved Wishlist
+          </button>
+        </nav>
+        <div class="sidebar-help">
+          <strong>Need assistance?</strong>
+          Orders are backed by 7-day direct return support.
+        </div>
+        <div class="sidebar-foot">
+          <div class="avatar" id="bpAvatar">B</div>
+          <div>
+            <div class="name" id="bpNameLabel">Buyer</div>
+            <div class="shop" id="bpEmailLabel">buyer@bazaaro.test</div>
+          </div>
+          <button class="logout" onclick="logoutBuyer()">Log out</button>
+        </div>
+      </div>
+
+      <div class="dash-main">
+        <div class="dash-topbar">
+          <div>
+            <h1>Buyer Profile</h1>
+            <p>Manage your personal details, delivery addresses, order history, and wishlist.</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="showScreen('store')">← Return to Storefront</button>
+        </div>
+
+        <div class="dash-content">
+          <!-- Page: Profile Info -->
+          <div id="bp-page-profile" class="dash-page active">
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Personal Information</h3>
+              </div>
+              <div class="panel-body">
+                <div class="form-msg ok" id="bpProfileMsg"></div>
+                <form onsubmit="submitBuyerProfileUpdate(event)">
+                  <div class="profile-avatar-upload">
+                    <div class="profile-avatar-preview" id="bpAvatarPreview">B</div>
+                    <div>
+                      <h4 style="font-size:.92rem; margin-bottom:4px;">Profile Picture</h4>
+                      <p style="font-size:.78rem; color:var(--ink-soft); margin-bottom:8px;">Paste any direct image URL (https://…) to customize your buyer avatar.</p>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label for="bpEditAvatar">Avatar Image URL</label>
+                    <input type="url" id="bpEditAvatar" placeholder="https://images.unsplash.com/photo-...">
+                  </div>
+
+                  <div class="field-row">
+                    <div class="field">
+                      <label for="bpEditName">Full Name</label>
+                      <input type="text" id="bpEditName" required>
+                    </div>
+                    <div class="field">
+                      <label for="bpEditEmail">Email Address (Read-only)</label>
+                      <input type="email" id="bpEditEmail" disabled style="opacity:.65;">
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label for="bpEditPhone">Contact Phone Number</label>
+                    <input type="tel" id="bpEditPhone" placeholder="10-digit mobile number">
+                  </div>
+
+                  <button type="submit" class="btn btn-primary">Save Profile Changes</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Page: Saved Addresses -->
+          <div id="bp-page-addresses" class="dash-page">
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Saved Delivery Addresses</h3>
+              </div>
+              <div class="panel-body">
+                <div id="bpAddressList"></div>
+
+                <div style="margin-top:28px; padding-top:22px; border-top:1px solid var(--border);">
+                  <h4 style="font-size:1rem; margin-bottom:14px;">Add New Address</h4>
+                  <form id="newAddressForm" onsubmit="submitNewAddress(event)">
+                    <div class="field-row">
+                      <div class="field">
+                        <label for="newAddrName">Contact Person Name</label>
+                        <input type="text" id="newAddrName" required placeholder="Aarav Sharma">
+                      </div>
+                      <div class="field">
+                        <label for="newAddrPhone">Contact Phone</label>
+                        <input type="tel" id="newAddrPhone" required placeholder="9876543210">
+                      </div>
+                    </div>
+                    <div class="field-row">
+                      <div class="field">
+                        <label for="newAddrPincode">Pincode</label>
+                        <input type="text" id="newAddrPincode" required placeholder="560001">
+                      </div>
+                      <div class="field">
+                        <label for="newAddrTag">Address Label</label>
+                        <select id="newAddrTag">
+                          <option value="Home">Home</option>
+                          <option value="Work">Work</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label for="newAddrLine">Street Address / Landmark / City</label>
+                      <textarea id="newAddrLine" rows="2" required placeholder="Flat 402, Lotus Apt, 8th Main, Indiranagar, Bengaluru"></textarea>
+                    </div>
+                    <div class="field" style="display:flex; align-items:center; gap:8px;">
+                      <input type="checkbox" id="newAddrDefault" style="width:18px; height:18px;">
+                      <label for="newAddrDefault" style="margin:0; font-size:.85rem; cursor:pointer;">Set as my default shipping address</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm">Save Address</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Page: Orders -->
+          <div id="bp-page-orders" class="dash-page">
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Your Marketplace Orders</h3>
+              </div>
+              <div class="panel-body">
+                <div id="bpOrdersList"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Page: Wishlist -->
+          <div id="bp-page-wishlist" class="dash-page">
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Saved Wishlist</h3>
+              </div>
+              <div class="panel-body">
+                <div class="product-grid" id="bpWishlistGrid"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       SCREEN: SELLER AUTH
+       ======================================================== -->
+  <div id="screen-seller-auth" class="screen">
+    <div class="auth-wrap">
+      <div class="auth-card">
+        <button class="auth-back" onclick="showScreen('store')">← Back to Bazaaro</button>
+        <div class="auth-brand">🧵 Bazaaro</div>
+        <h2 id="authTitle">Welcome back</h2>
+        <p class="sub" id="authSub">Log in to manage your shop.</p>
+
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Log in</button>
+          <button class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Create shop</button>
+        </div>
+
+        <div class="demo-box">
+          <strong>Demo seller login</strong>
+          Email: <code>demo@bazaaro.test</code> · Pass: <code>demo1234</code>
+          <div style="margin-top:10px;">
+            <button class="btn btn-ghost btn-sm" onclick="fillDemoCreds()">Auto-fill demo credentials</button>
+          </div>
+        </div>
+
+        <div class="form-msg err" id="authMsg"></div>
+
+        <form id="loginForm" class="auth-form active" onsubmit="submitLogin(event)">
+          <div class="field">
+            <label for="loginEmail">Email address</label>
+            <input type="email" id="loginEmail" required placeholder="you@yourbrand.com">
+          </div>
+          <div class="field">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" required placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" id="loginSubmitBtn">Log in</button>
+        </form>
+
+        <form id="signupForm" class="auth-form" onsubmit="submitSignup(event)">
+          <div class="field">
+            <label for="signupShop">Shop name</label>
+            <input type="text" id="signupShop" required placeholder="Studio Mati">
+          </div>
+          <div class="field">
+            <label for="signupEmail">Email address</label>
+            <input type="email" id="signupEmail" required placeholder="you@yourbrand.com">
+          </div>
+          <div class="field">
+            <label for="signupPassword">Choose password</label>
+            <input type="password" id="signupPassword" required minlength="6" placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" id="signupSubmitBtn">Create my shop</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       SCREEN: SELLER DASHBOARD
+       ======================================================== -->
+  <div id="screen-seller-dashboard" class="screen">
+    <div class="sidebar-scrim" id="sidebarScrim" onclick="toggleSidebar(false)"></div>
+    <div class="shell">
+      <aside class="sidebar" id="dashSidebar">
+        <div class="brand">
+          🧵 Bazaaro <span class="badge-tag">SELLER</span>
+        </div>
+        <nav>
+          <button class="nav-link active" data-page="home" onclick="showSellerPage('home')">
+            <span class="ic">🏠</span> Overview
+          </button>
+          <button class="nav-link" data-page="products" onclick="showSellerPage('products')">
+            <span class="ic">🛍️</span> My Products
+          </button>
+          <button class="nav-link" data-page="orders" onclick="showSellerPage('orders')">
+            <span class="ic">📦</span> Orders
+          </button>
+          <button class="nav-link" data-page="profile" onclick="showSellerPage('profile')">
+            <span class="ic">⚙️</span> Shop Profile
+          </button>
+        </nav>
+        <div class="sidebar-help">
+          <strong>Selling tips</strong>
+          Products with clear descriptions and fair pricing receive 4x more orders.
+        </div>
+        <div class="sidebar-foot">
+          <div class="avatar" id="sellerAvatar">S</div>
+          <div>
+            <div class="name" id="sellerNameLabel">Shop Name</div>
+            <div class="shop" id="sellerSinceLabel">Seller</div>
+          </div>
+          <button class="logout" onclick="logoutSeller()">Log out</button>
+        </div>
+      </aside>
+
+      <div class="dash-main">
+        <div class="dash-topbar">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <button class="dash-hamburger" onclick="toggleSidebar(true)">☰</button>
+            <div>
+              <h1 id="dashPageTitle">Good day! ☀️</h1>
+              <p id="dashPageSub">Here's how your shop is doing.</p>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <button class="btn btn-ghost btn-sm" onclick="showScreen('store')">View Storefront</button>
+            <button class="btn btn-primary btn-sm" onclick="openProductForm('add')">+ Add product</button>
+          </div>
+        </div>
+
+        <div class="dash-content">
+          <div id="suspendBanner" class="suspend-banner hide">
+            ⚠️ Your shop has been temporarily suspended by the platform administrator. Your listings are currently hidden from buyers.
+          </div>
+
+          <!-- Page: Home Overview -->
+          <div id="dpage-home" class="dash-page active">
+            <div class="onboard">
+              <div class="onboard-top">
+                <div>
+                  <h3>Complete your shop checklist</h3>
+                  <p style="font-size:.82rem; opacity:.85; margin-top:2px;">A complete profile helps buyers discover and trust your products.</p>
+                </div>
+                <div class="pct" id="onboardPct">0%</div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+              <div class="checklist" id="onboardChecklist"></div>
+            </div>
+
+            <div class="stat-row" id="statRow"></div>
+
+            <div class="action-row">
+              <button type="button" class="action-tile" onclick="openProductForm('add')">
+                <div class="ic" style="background:var(--sage-bg); color:var(--sage);">🛍️</div>
+                <div><h4>Add a product</h4><p>List something new in your catalog</p></div>
+              </button>
+              <button type="button" class="action-tile" onclick="showSellerPage('orders')">
+                <div class="ic" style="background:var(--sky-bg); color:var(--sky);">📦</div>
+                <div><h4>Manage orders</h4><p id="pendingOrdersNote">View buyer orders</p></div>
+              </button>
+              <button type="button" class="action-tile" onclick="showSellerPage('profile')">
+                <div class="ic" style="background:#FDF0DC; color:var(--accent-dark);">✨</div>
+                <div><h4>Edit shop story</h4><p>Update what buyers read about you</p></div>
+              </button>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Orders needing attention</h3>
+                <button class="link-btn" onclick="showSellerPage('orders')">View all →</button>
+              </div>
+              <div class="panel-body">
+                <div id="dashOrders"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Page: Products -->
+          <div id="dpage-products" class="dash-page">
+            <div class="product-grid" id="sellerProductGrid"></div>
+          </div>
+
+          <!-- Page: Orders -->
+          <div id="dpage-orders" class="dash-page">
+            <div class="panel">
+              <div class="panel-head">
+                <h3>All Orders</h3>
+              </div>
+              <div class="panel-body">
+                <div id="sellerOrdersList"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Page: Profile -->
+          <div id="dpage-profile" class="dash-page">
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Shop Profile</h3>
+              </div>
+              <div class="panel-body">
+                <div class="form-msg ok" id="profileMsg"></div>
+                <form onsubmit="submitProfileForm(event)">
+                  <div class="pf-preview">
+                    <div class="avatar" id="profileAvatar" style="width:68px; height:68px; font-size:1.6rem;">S</div>
+                    <div>
+                      <h4 style="font-size:1rem; margin-bottom:4px;">Shop branding</h4>
+                      <p style="font-size:.8rem; color:var(--ink-soft);">Your shop avatar is generated automatically from your brand name.</p>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="pfShopName">Shop name</label>
+                    <input type="text" id="pfShopName" required>
+                  </div>
+                  <div class="field">
+                    <label for="pfAbout">About your craft &amp; shop</label>
+                    <textarea id="pfAbout" rows="4" placeholder="Tell buyers where you are based, what materials you work with, and what inspires your pieces."></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Save changes</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       SCREEN: ADMIN AUTH
+       ======================================================== -->
+  <div id="screen-admin-auth" class="screen">
+    <div class="auth-wrap">
+      <div class="auth-card">
+        <button class="auth-back" onclick="showScreen('store')">← Back to Bazaaro</button>
+        <div class="auth-brand">🧵 Bazaaro</div>
+        <h2>Platform Admin</h2>
+        <p class="sub">Platform operations &amp; marketplace supervision.</p>
+
+        <div class="demo-box">
+          <strong>Demo admin credentials</strong>
+          Email: <code>admin@bazaaro.test</code> · Pass: <code>admin1234</code>
+          <div style="margin-top:10px;">
+            <button class="btn btn-ghost btn-sm" onclick="fillAdminDemoCreds()">Auto-fill admin demo</button>
+          </div>
+        </div>
+
+        <div class="form-msg err" id="adminAuthMsg"></div>
+
+        <form onsubmit="submitAdminLogin(event)">
+          <div class="field">
+            <label for="adminEmail">Admin email</label>
+            <input type="email" id="adminEmail" required>
+          </div>
+          <div class="field">
+            <label for="adminPassword">Admin password</label>
+            <input type="password" id="adminPassword" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" id="adminLoginBtn">Log in to admin</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       SCREEN: ADMIN DASHBOARD
+       ======================================================== -->
+  <div id="screen-admin-dashboard" class="screen">
+    <div class="sidebar-scrim" id="adminSidebarScrim" onclick="toggleAdminSidebar(false)"></div>
+    <div class="shell">
+      <aside class="sidebar" id="adminSidebar">
+        <div class="brand">
+          🧵 Bazaaro <span class="badge-tag" style="background:var(--lav);">ADMIN</span>
+        </div>
+        <nav>
+          <button class="nav-link active" data-apage="overview" onclick="showAdminPage('overview')">
+            <span class="ic">📊</span> Overview
+          </button>
+          <button class="nav-link" data-apage="sellers" onclick="showAdminPage('sellers')">
+            <span class="ic">🏪</span> Sellers
+          </button>
+          <button class="nav-link" data-apage="products" onclick="showAdminPage('products')">
+            <span class="ic">🛍️</span> Products
+          </button>
+          <button class="nav-link" data-apage="orders" onclick="showAdminPage('orders')">
+            <span class="ic">📦</span> Orders
+          </button>
+        </nav>
+        <div class="sidebar-foot">
+          <div class="avatar" style="background:var(--lav);">A</div>
+          <div>
+            <div class="name">Administrator</div>
+            <div class="shop">admin@bazaaro.test</div>
+          </div>
+          <button class="logout" onclick="logoutAdmin()">Log out</button>
+        </div>
+      </aside>
+
+      <div class="dash-main">
+        <div class="dash-topbar">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <button class="dash-hamburger" onclick="toggleAdminSidebar(true)">☰</button>
+            <div>
+              <h1 id="adminPageTitle">Platform overview</h1>
+              <p id="adminPageSub">How Bazaaro is doing, at a glance.</p>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="showScreen('store')">View Storefront</button>
+        </div>
+
+        <div class="dash-content">
+          <div class="stat-row" id="adminStatRow"></div>
+
+          <!-- Page: Overview -->
+          <div id="apage-overview" class="dash-page active">
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Order Status Breakdown</h3>
+              </div>
+              <div class="panel-body" id="adminStatusBreakdown"></div>
+            </div>
+          </div>
+
+          <!-- Page: Sellers -->
+          <div id="apage-sellers" class="dash-page">
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Registered Sellers</h3>
+              </div>
+              <div class="panel-body">
+                <div class="table-wrap">
+                  <table class="data-table" id="adminSellersTable"></table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Page: Products -->
+          <div id="apage-products" class="dash-page">
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Product Moderation</h3>
+              </div>
+              <div class="panel-body">
+                <div class="table-wrap">
+                  <table class="data-table" id="adminProductsTable"></table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Page: Orders -->
+          <div id="apage-orders" class="dash-page">
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Marketplace Order Ledger</h3>
+              </div>
+              <div class="panel-body">
+                <div class="table-wrap">
+                  <table class="data-table" id="adminOrdersTable"></table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       CART DRAWER & OVERLAY
+       ======================================================== -->
+  <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-head">
+      <h3 style="font-size:1.15rem;">Your Cart</h3>
+      <button class="icon-btn" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-body" id="drawerBody"></div>
+    <div class="drawer-foot">
+      <div class="drawer-subtotal">
+        <span>Subtotal</span>
+        <span id="drawerSubtotal">₹0</span>
+      </div>
+      <button class="btn btn-primary btn-block" id="drawerCheckoutBtn" onclick="goToCheckout()">Proceed to Checkout</button>
+    </div>
+  </aside>
+
+  <!-- ========================================================
+       PRODUCT QUICK VIEW MODAL
+       ======================================================== -->
+  <div class="modal-overlay" id="pvOverlay" onclick="if(event.target===this) closeProductModal()">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeProductModal()">✕</button>
+      <div class="pv-grid">
+        <div class="pv-art art-swatch" id="pvArt"></div>
+        <div class="pv-body">
+          <p class="pv-shop" id="pvShop"></p>
+          <h3 id="pvName"></h3>
+          <div>
+            <span class="pv-price" id="pvPrice"></span>
+            <span class="pv-old" id="pvOld"></span>
+          </div>
+          <p class="pv-desc" id="pvDesc"></p>
+          <div class="pv-stock" id="pvStock"></div>
+          <div class="pv-qty" id="pvQtyWrap">
+            <span style="font-size:.85rem; font-weight:600;">Qty</span>
+            <button class="qty-btn" onclick="changePvQty(-1)">−</button>
+            <span id="pvQty">1</span>
+            <button class="qty-btn" onclick="changePvQty(1)">+</button>
+          </div>
+          <div class="pv-actions">
+            <button class="btn btn-primary" id="pvAddBtn" onclick="pvAddToCart()">Add to cart</button>
+            <button class="btn btn-ghost" id="pvBuyBtn" onclick="pvBuyNow()">Buy now</button>
+          </div>
+
+          <div class="pv-reviews">
+            <h4>Customer Reviews</h4>
+            <div id="pvReviewsList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       PRODUCT FORM MODAL (ADD / EDIT)
+       ======================================================== -->
+  <div class="modal-overlay" id="pfOverlay" onclick="if(event.target===this) closeProductForm()">
+    <div class="modal-card" style="max-width:540px; padding:30px;">
+      <button class="modal-close" onclick="closeProductForm()">✕</button>
+      <h3 style="margin-bottom:18px;" id="pfTitle">Add a product</h3>
+      <div class="form-msg err" id="pfMsg"></div>
+
+      <div class="pf-preview">
+        <div class="art-swatch" id="pfArtPreview"></div>
+        <div>
+          <h4 style="font-size:.9rem; margin-bottom:4px;">Artwork preview</h4>
+          <p style="font-size:.76rem; color:var(--ink-soft); margin-bottom:8px;">Every piece gets a distinct generative art swatch.</p>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="shuffleArtSeed()">Shuffle pattern</button>
+        </div>
+      </div>
+
+      <form id="productForm" onsubmit="submitProductForm(event)">
+        <!-- Product Picture Prompt & Upload -->
+        <div class="field" style="margin-bottom:16px;">
+          <label style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Product Picture <span style="color:var(--primary); font-weight:700;">*</span></span>
+            <span style="font-size:.76rem; color:var(--ink-soft);">Photo required to showcase item</span>
+          </label>
+          <div id="pfImageDropzone" class="pf-dropzone" onclick="document.getElementById('pfImageFile').click()">
+            <input type="file" id="pfImageFile" accept="image/*" style="display:none;" onchange="handleProductImageFile(this)">
+            <div id="pfImageEmptyState">
+              <div style="font-size:1.8rem; margin-bottom:4px;">📸</div>
+              <div style="font-weight:600; font-size:.88rem; color:var(--ink);">Click to upload product photo</div>
+              <div style="font-size:.75rem; color:var(--ink-soft); margin-top:2px;">PNG, JPG, or WebP</div>
+            </div>
+            <div id="pfImagePreviewState" style="display:none;">
+              <img id="pfPreviewImg" src="" alt="Product preview" style="max-height:140px; max-width:100%; border-radius:10px; object-fit:cover; display:inline-block;">
+              <div style="margin-top:8px; display:flex; gap:8px; justify-content:center;">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); document.getElementById('pfImageFile').click();">Change photo</button>
+                <button type="button" class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="event.stopPropagation(); removeProductImage();">Remove</button>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:8px; display:flex; gap:8px;">
+            <input type="url" id="pfImageUrlInput" placeholder="Or paste image URL (e.g. /products/kurti.jpg)" oninput="handleProductImageUrlInput(this.value)" style="font-size:.82rem; padding:8px 12px; border-radius:8px; border:1.5px solid var(--border); width:100%;">
+          </div>
+          <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+            <span style="font-size:.72rem; color:var(--ink-soft);">Or pick photo:</span>
+            <button type="button" class="pf-sample-chip" onclick="selectSampleProductImage('/products/kurti.jpg')">Kurti</button>
+            <button type="button" class="pf-sample-chip" onclick="selectSampleProductImage('/products/dupatta.jpg')">Dupatta</button>
+            <button type="button" class="pf-sample-chip" onclick="selectSampleProductImage('/products/palazzo.jpg')">Palazzo</button>
+            <button type="button" class="pf-sample-chip" onclick="selectSampleProductImage('/products/earbuds.jpg')">Earbuds</button>
+            <button type="button" class="pf-sample-chip" onclick="selectSampleProductImage('/products/speaker.jpg')">Speaker</button>
+            <button type="button" class="pf-sample-chip" onclick="selectSampleProductImage('/products/planter.jpg')">Planter</button>
+            <button type="button" class="pf-sample-chip" onclick="selectSampleProductImage('/products/hanging.jpg')">Jute Wall</button>
+            <button type="button" class="pf-sample-chip" onclick="selectSampleProductImage('/products/facemist.jpg')">Rose Mist</button>
+            <button type="button" class="pf-sample-chip" onclick="selectSampleProductImage('/products/facewash.jpg')">Face Wash</button>
+            <button type="button" class="pf-sample-chip" onclick="selectSampleProductImage('/products/sandals.jpg')">Sandals</button>
+            <button type="button" class="pf-sample-chip" onclick="selectSampleProductImage('/products/jhumkas.jpg')">Jhumkas</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="pfName">Product name</label>
+          <input type="text" id="pfName" required placeholder="Terracotta chai mug" oninput="renderArtPreview()">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="pfCategory">Category</label>
+            <select id="pfCategory" onchange="renderArtPreview()">
+              <option value="Fashion">Fashion</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Home &amp; Kitchen">Home &amp; Kitchen</option>
+              <option value="Beauty">Beauty</option>
+              <option value="Footwear">Footwear</option>
+              <option value="Jewelry">Jewelry</option>
+              <option value="Grocery">Grocery</option>
+              <option value="Toys">Toys</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="pfStock">Stock quantity</label>
+            <input type="number" id="pfStock" required min="0" value="10">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="pfPrice">Price (₹)</label>
+            <input type="number" id="pfPrice" required min="1" placeholder="890">
+          </div>
+          <div class="field">
+            <label for="pfOldPrice">Original price (₹, optional)</label>
+            <input type="number" id="pfOldPrice" min="1" placeholder="1150">
+          </div>
+        </div>
+        <div class="field">
+          <label for="pfDesc">Description</label>
+          <textarea id="pfDesc" rows="3" placeholder="Tell buyers about materials, sizing, and origin."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="pfSubmitBtn">Save product</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       REVIEW MODAL
+       ======================================================== -->
+  <div class="modal-overlay" id="reviewModal" onclick="if(event.target===this) closeReviewModal()">
+    <div class="modal-card" style="max-width:440px; padding:30px;">
+      <button class="modal-close" onclick="closeReviewModal()">✕</button>
+      <h3 style="margin-bottom:6px;">Review Product</h3>
+      <p style="font-size:.85rem; color:var(--ink-soft); margin-bottom:16px;" id="revProductName"></p>
+      <div class="form-msg err" id="revOrderMsg"></div>
+
+      <form id="reviewForm" onsubmit="submitReviewForm(event)">
+        <div class="field">
+          <label for="revRating">Rating</label>
+          <select id="revRating">
+            <option value="5">★★★★★ (5/5 Outstanding)</option>
+            <option value="4">★★★★☆ (4/5 Very Good)</option>
+            <option value="3">★★★☆☆ (3/5 Average)</option>
+            <option value="2">★★☆☆☆ (2/5 Poor)</option>
+            <option value="1">★☆☆☆☆ (1/5 Terribly Dissatisfied)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="revText">Your honest feedback</label>
+          <textarea id="revText" rows="3" required placeholder="What did you love about this item? Mention fit, quality, or craft..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Submit Review</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       CONFIRMATION MODAL
+       ======================================================== -->
+  <div class="modal-overlay" id="confirmOverlay">
+    <div class="confirm-card">
+      <h3 id="confirmTitle">Are you sure?</h3>
+      <p id="confirmMsg"></p>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost btn-sm" onclick="confirmResolve(false)">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="confirmResolve(true)">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast"></div>
+
+  <!-- Master Frontend Logic -->
+  <script src="/bazaaro.js"></script>
+</body>
+</html>
